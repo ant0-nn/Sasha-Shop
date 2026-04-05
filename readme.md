@@ -76,7 +76,6 @@ yarn test
 
 ```env
 PORT=3001
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/sasha-shop"
 JWT_SECRET="change-me"
 JWT_EXPIRES_IN="7d"
 
