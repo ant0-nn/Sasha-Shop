@@ -1,0 +1,15 @@
+{
+    "name": "sashashop",
+    "version": "1.0.0",
+    "private": true,
+    "description": "SashaShop e-commerce platform",
+    "scripts": {
+        "dev:frontend": "yarn --cwd frontend dev",
+        "dev:backend": "yarn --cwd backend start:dev",
+        "dev": "concurrently \"yarn dev:frontend\" \"yarn dev:backend\"",
+        "install:all": "yarn install && yarn --cwd frontend install && yarn --cwd backend install"
+    },
+    "dependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

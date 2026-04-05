@@ -1,0 +1,271 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AdminStatsType {
+  adminsCount: Int!
+  ordersCount: Int!
+  totalRevenue: String!
+  usersCount: Int!
+}
+
+type AuthPayloadType {
+  accessToken: String!
+  user: UserType!
+}
+
+enum AvailabilityStatus {
+  EXPECTED
+  IN_STOCK
+  OUT_OF_STOCK
+}
+
+type BannerType {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  imageUrl: String!
+  isActive: Boolean!
+  linkUrl: String
+  title: String!
+  updatedAt: DateTime!
+}
+
+input CreateBannerInput {
+  description: String
+  imageUrl: String!
+  isActive: Boolean = true
+  linkUrl: String
+  title: String!
+}
+
+input CreateOrderInput {
+  comment: String
+  customerName: String!
+  customerPhone: String!
+  deliveryAddress: String!
+  deliveryCity: String!
+  items: [CreateOrderItemInput!]!
+  paymentMethod: PaymentMethod = CASH_ON_DELIVERY
+}
+
+input CreateOrderItemInput {
+  productId: ID!
+  quantity: Int!
+}
+
+input CreateProductInput {
+  availabilityStatus: AvailabilityStatus = IN_STOCK
+  brandName: String
+  categoryName: String!
+  categorySlug: String!
+  description: String!
+  imageUrl: String
+  isActive: Boolean = true
+  isNew: Boolean = false
+  isPopular: Boolean = false
+  name: String!
+  oilTypeName: String
+  price: Float!
+  productType: ProductType = OTHER
+  sku: String!
+  slug: String
+  variantGroup: String
+  viscosityName: String
+  volumeLiters: Float
+}
+
+enum Currency {
+  EUR
+  UAH
+  USD
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  adminCreateBanner(input: CreateBannerInput!): BannerType!
+  adminCreateProduct(input: CreateProductInput!): Product!
+  adminDeleteBanner(id: String!): Boolean!
+  adminDeleteProduct(id: String!): Boolean!
+  adminSetUserRole(input: UpdateUserRoleInput!): UserType!
+  adminUpdateBanner(input: UpdateBannerInput!): BannerType!
+  adminUpdateProduct(input: UpdateProductInput!): Product!
+  adminUpdateShopSettings(input: UpdateShopSettingsInput!): ShopSettings!
+  createMyOrder(input: CreateOrderInput!): Order!
+  login(input: LoginInput!): AuthPayloadType!
+  register(input: RegisterInput!): AuthPayloadType!
+}
+
+type Order {
+  comment: String
+  createdAt: DateTime!
+  customerName: String!
+  customerPhone: String!
+  deliveryAddress: String!
+  deliveryCity: String!
+  displayNumber: String!
+  id: ID!
+  items: [OrderItem!]!
+  paymentMethod: PaymentMethod!
+  status: OrderStatus!
+  totalAmount: String!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+type OrderItem {
+  id: String!
+  price: String!
+  productId: String!
+  productImageUrl: String
+  productName: String!
+  productSlug: String!
+  quantity: Int!
+  subtotal: String!
+}
+
+enum OrderStatus {
+  CANCELLED
+  DELIVERED
+  PAID
+  PENDING
+  PROCESSING
+  SHIPPED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CARD_ON_DELIVERY
+  CASH_ON_DELIVERY
+}
+
+type Product {
+  availabilityStatus: AvailabilityStatus!
+  brandName: String
+  categoryId: String!
+  categoryName: String!
+  categorySlug: String!
+  createdAt: DateTime!
+  description: String!
+  id: ID!
+  imageUrl: String
+  isActive: Boolean!
+  isNew: Boolean!
+  isPopular: Boolean!
+  name: String!
+  oilTypeName: String
+  price: String!
+  productType: ProductType!
+  sku: String!
+  slug: String!
+  updatedAt: DateTime!
+  variantGroup: String
+  viscosityName: String
+  volumeLiters: Float
+}
+
+enum ProductType {
+  ADDITIVE
+  FILTER
+  OIL
+  OTHER
+}
+
+type Query {
+  adminOrders(status: OrderStatus, take: Int): [Order!]!
+  adminStats: AdminStatsType!
+  adminUsers(take: Int): [UserType!]!
+  banners(activeOnly: Boolean): [BannerType!]!
+  me: UserType!
+  myOrder(id: ID!): Order!
+  myOrders(take: Int): [Order!]!
+  products(activeOnly: Boolean, search: String, take: Int): [Product!]!
+  shopSettings: ShopSettings!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+type ShopSettings {
+  createdAt: DateTime!
+  currency: Currency!
+  managerTelegram: String!
+  orderPrefix: String!
+  seoDescription: String!
+  storeName: String!
+  supportEmail: String!
+  supportPhone: String!
+  timezone: String!
+  updatedAt: DateTime!
+}
+
+input UpdateBannerInput {
+  description: String
+  id: ID!
+  imageUrl: String
+  isActive: Boolean
+  linkUrl: String
+  title: String
+}
+
+input UpdateProductInput {
+  availabilityStatus: AvailabilityStatus
+  brandName: String
+  categoryName: String
+  categorySlug: String
+  description: String
+  id: ID!
+  imageUrl: String
+  isActive: Boolean
+  isNew: Boolean
+  isPopular: Boolean
+  name: String
+  oilTypeName: String
+  price: Float
+  productType: ProductType
+  sku: String
+  slug: String
+  variantGroup: String
+  viscosityName: String
+  volumeLiters: Float
+}
+
+input UpdateShopSettingsInput {
+  currency: Currency!
+  managerTelegram: String!
+  orderPrefix: String!
+  seoDescription: String!
+  storeName: String!
+  supportEmail: String!
+  supportPhone: String!
+  timezone: String!
+}
+
+input UpdateUserRoleInput {
+  role: Role!
+  userId: ID!
+}
+
+type UserType {
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  role: Role!
+  updatedAt: DateTime!
+}

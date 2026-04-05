@@ -1,0 +1,172 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum Currency {
+  UAH
+  USD
+  EUR
+}
+
+model ShopSettings {
+  id              String   @id @default("global")
+  storeName       String   @default("SashaShop")
+  supportEmail    String   @default("support@sashashop.com")
+  supportPhone    String   @default("+380 (99) 111-22-33")
+  managerTelegram String   @default("@sashashop_manager")
+  seoDescription  String   @default("Магазин преміальних моторних олив та фільтрів.")
+  currency        Currency @default(UAH)
+  timezone        String   @default("Europe/Kyiv")
+  orderPrefix     String   @default("SS")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Banner {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  imageUrl    String
+  linkUrl     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Brand {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+model OilType {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Viscosity {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  products Product[]
+}
+
+enum ProductType {
+  OIL // Масло
+  ADDITIVE // Присадки
+  FILTER // Фільтра
+  OTHER
+}
+
+enum AvailabilityStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+  EXPECTED
+}
+
+model Category {
+  id       String     @id @default(uuid())
+  name     String
+  slug     String     @unique
+  products Product[]
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+}
+
+model Product {
+  id                 String             @id @default(uuid())
+  name               String
+  slug               String             @unique
+  description        String
+  imageUrl           String?
+  price              Decimal            @db.Decimal(10, 2)
+  stock              Int                @default(0)
+  sku                String             @unique
+  availabilityStatus AvailabilityStatus @default(IN_STOCK)
+  isNew              Boolean            @default(false)
+  isPopular          Boolean            @default(false)
+
+  productType ProductType @default(OTHER)
+
+  brandId String?
+  brand   Brand?  @relation(fields: [brandId], references: [id])
+
+  viscosityId String?
+  viscosity   Viscosity? @relation(fields: [viscosityId], references: [id])
+
+  oilTypeId String?
+  oilType   OilType? @relation(fields: [oilTypeId], references: [id])
+
+  // Flexible attributes stored as JSONB for minor/custom specs not covered by the above
+  attributes Json?
+
+  categoryId String
+  category   Category    @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  status          OrderStatus   @default(PENDING)
+  paymentMethod   PaymentMethod @default(CASH_ON_DELIVERY)
+  customerName    String
+  customerPhone   String
+  deliveryCity    String
+  deliveryAddress String
+  comment         String?
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  items           OrderItem[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH_ON_DELIVERY
+  CARD_ON_DELIVERY
+  BANK_TRANSFER
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2) // Captured at purchase time!
+}

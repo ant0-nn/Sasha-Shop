@@ -1,0 +1,22 @@
+# General
+node_modules/
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Next.js (Frontend)
+.next/
+out/
+build/
+
+# NestJS (Backend)
+dist/
+uploads/
+
+# Yarn
+yarn-error.log
+
+# Prisma
+db.sqlite
+db.sqlite-journal
